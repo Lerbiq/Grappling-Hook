@@ -23,7 +23,7 @@ Forked from SnowGears. Many thanks to him for his amazing work :)
 5. Profit?
 6. Profit!
 
-###The recipes follow this pattern:
+### The recipes follow this pattern:
 
 ![grappling_hook](https://user-images.githubusercontent.com/57460117/109689115-45644c80-7b85-11eb-8981-e1be0aabd105.png)
 
