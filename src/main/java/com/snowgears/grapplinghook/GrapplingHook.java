@@ -182,6 +182,7 @@ public class GrapplingHook extends JavaPlugin{
 				}else if((cmd.getName().equalsIgnoreCase("gh")) && args[0].equalsIgnoreCase("reload")){
 					reloadConfig();
 					loadConfigOptions();
+					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', configReloaded));
 				}
 			}
 			return true;

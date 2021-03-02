@@ -47,7 +47,7 @@ allowedWorlds:
 #############################################################
 
 # Placeholders are:
-# %player% for player"name
+# %player% for player name
 # %player_display_name% for display name of player (with prefixes and suffixes)
 # %entity% for type of entity
 # %entity_name% for name of entity (Renamed entities will display their renamed names)
