@@ -1,7 +1,8 @@
 name: GrapplingHook
-author: Tanner Embry
-description: A simple grappling hook plugin.
-version: 1.5.9
+author: Lerbiq
+description: A simple grappling hook plugin. Forked from SnowGears (Tanner Embry).
+api-version: 1.13
+version: 1.0.0
 main: com.snowgears.grapplinghook.GrapplingHook
 permissions:
     grapplinghook.pull.self:
@@ -31,6 +32,9 @@ permissions:
     grapplinghook.craft.diamond:
         description: Allows player to craft diamond grappling hooks
         default: op
+    grapplinghook.craft.netherite:
+        description: Allows player to craft netherite grappling hooks
+        default: op
     grapplinghook.command.give:
         description: Allows player to use command /gh give
         default: op
@@ -39,6 +43,12 @@ permissions:
         default: op
     grapplinghook.player.nocooldown:
         description: Player ignores grapple cooldown
+        default: op
+    grapplinghook.worlds.bypass:
+        description: Allows player to bypass the allowed worlds restriction
+        default: op
+    grapplinghook.command.reload:
+        description: Reloads the config
         default: op
 commands:
    gh:

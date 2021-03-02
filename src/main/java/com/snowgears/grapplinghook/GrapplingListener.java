@@ -2,30 +2,32 @@ package com.snowgears.grapplinghook;
 
 import com.snowgears.grapplinghook.api.HookAPI;
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.FishHook;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.HashMap;
 
 
 public class GrapplingListener implements Listener{
 
-	public GrapplingHook plugin = GrapplingHook.plugin;
+	public GrapplingHook plugin;
 
-	public HashMap<Integer, Integer> noFallEntities = new HashMap<Integer, Integer>(); //entity id, delayed task id
-	public HashMap<String, Integer> noGrapplePlayers = new HashMap<String, Integer>(); //name, delayed task id
+	public HashMap<Integer, Integer> noFallEntities = new HashMap<>(); //entity id, delayed task id
+	public HashMap<String, Integer> noGrapplePlayers = new HashMap<>(); //name, delayed task id
 	
 	public GrapplingListener(GrapplingHook instance) {
 		plugin = instance;
@@ -33,7 +35,7 @@ public class GrapplingListener implements Listener{
 	
 	@EventHandler
 	public void onPreCraft(CraftItemEvent event){
-		if(GrapplingHook.usePerms == false)
+		if(!GrapplingHook.usePerms)
 			return;
 		if(event.getView().getPlayer() instanceof Player){
 			Player player = (Player)event.getView().getPlayer();
@@ -61,13 +63,23 @@ public class GrapplingListener implements Listener{
 				else if(event.getInventory().contains(Material.DIAMOND)){
 					if(!player.hasPermission("grapplinghook.craft.diamond"))
 						event.setCancelled(true);
+				}else if(Bukkit.getVersion().contains("1.16")){
+					if(event.getInventory().contains(Material.NETHERITE_INGOT)){
+						if(!player.hasPermission("grapplinghook.craft.netherite")){
+							event.setCancelled(true);
+						}
+					}
 				}
 			}
 		}
 	}
 
-    @EventHandler
+    /*@EventHandler //Isn't working as it should. Event doesnt get even called when using grappling hook.
     public void onAttack(EntityDamageByEntityEvent event){
+		Bukkit.getLogger().info("EntityDamageByEntityEvent triggered.");
+		if(event.isCancelled()){
+			Bukkit.getLogger().info("Event canceled.");
+		}
     	
     		if(event.getDamager() instanceof FishHook){
     		FishHook hook = (FishHook)event.getDamager();
@@ -75,28 +87,44 @@ public class GrapplingListener implements Listener{
     			return;
     		Player player = (Player)hook.getShooter();
 
-    		if(HookAPI.isGrapplingHook(player.getItemInHand()) == false)
+    		if(!HookAPI.isGrapplingHook(player.getInventory().getItemInMainHand()))
     			return;
     		
-    		if(GrapplingHook.usePerms == false || player.hasPermission("grapplinghook.pull.players")){
+    		if(!GrapplingHook.usePerms || player.hasPermission("grapplinghook.pull.players")){
 	    		
 	    		if(event.getEntity() instanceof Player){
 		    		Player hooked = (Player)event.getEntity();
 		    		if(hooked.hasPermission("grapplinghook.player.nopull")){
 		    			event.setCancelled(true);
 		    		}
-		    		else{
-		    			hooked.sendMessage(ChatColor.YELLOW+"You have been hooked by "+ ChatColor.RESET+player.getName()+ChatColor.YELLOW+"!");
-		    			player.sendMessage(ChatColor.GOLD+"You have hooked "+ChatColor.RESET+hooked.getName()+ChatColor.YELLOW+"!");
+		    		else if(GrapplingHook.sendMessages){
+		    			hooked.sendMessage(
+		    					ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedByMessage
+										.replaceAll("%player%", player.getName()).replaceAll("%player_display_name%", player.getDisplayName()))
+						);
+		    			//hooked.sendMessage(ChatColor.YELLOW+"You have been hooked by "+ ChatColor.RESET+player.getName()+ChatColor.YELLOW+"!");
+						player.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedPlayerMessage
+										.replaceAll("%player%", hooked.getName()).replaceAll("%player_display_name%", hooked.getDisplayName())));
+		    			//player.sendMessage(ChatColor.GOLD+"You have hooked "+ChatColor.RESET+hooked.getName()+ChatColor.YELLOW+"!");
 		    		}
 	    		}
 	    		else{
-	    			String entityName = event.getEntityType().toString().replace("_", " ").toLowerCase();
-	    			player.sendMessage(ChatColor.GOLD+"You have hooked a "+entityName+"!");
+	    			if(GrapplingHook.sendMessages){
+						String entityName = event.getEntityType().toString().replace("_", " ").toLowerCase();
+						String entityCustomName = event.getEntity().getCustomName();
+						if(entityCustomName == null){
+							entityCustomName = entityName;
+						}
+						player.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedEntityMessage
+										.replaceAll("%entity%", entityName).replaceAll("%entity_name%", entityCustomName)));
+						//player.sendMessage(ChatColor.GOLD+"You have hooked a "+entityName+"!");
+					}
 	    		}
 	    	}
     		}
-	}
+	}*/
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageEvent(EntityDamageEvent event) {
@@ -109,17 +137,44 @@ public class GrapplingListener implements Listener{
         }
     }
 
+    @EventHandler
+	public void onProjectileShoot(ProjectileLaunchEvent e){
+		final double multiplier = GrapplingHook.hookSpeedMultiplier;
+		if (e.getEntityType().equals((Object)EntityType.FISHING_HOOK)) {
+			e.getEntity().setVelocity(e.getEntity().getVelocity().multiply(multiplier));
+		}
+	}
+
+	/*@EventHandler
+	public void onLeftClickWithHook(PlayerInteractEvent e){
+		if(e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK){
+			if(HookAPI.isGrapplingHook(e.getItem())){
+
+			}
+		}
+	}*/
+
     @EventHandler (priority = EventPriority.MONITOR)
     public void onGrapple(PlayerGrappleEvent event){
     	if(event.isCancelled())
     		return;
-    	final Player player = event.getPlayer();
-    	
-    	event.getHookItem().setDurability((short)-10);
+		final Player player = event.getPlayer();
+    	if(!GrapplingHook.allowedWorlds.contains(player.getLocation().getWorld().getName())){
+    		if(!player.hasPermission("grapplinghook.worlds.bypass")){
+				player.sendMessage(ChatColor.translateAlternateColorCodes('&',GrapplingHook.disabledWorld));
+				event.setCancelled(true);
+				return;
+			}
+		}
+
+
+		Damageable meta = (Damageable) event.getHookItem().getItemMeta();
+		meta.setDamage((short)-10);
+		event.getHookItem().setItemMeta((ItemMeta) meta);
     	
     	if(noGrapplePlayers.containsKey(player.getName())){
     		if(!player.hasPermission("grapplinghook.player.nocooldown")){
-    			player.sendMessage(ChatColor.GRAY+"You cannot do that yet.");
+    			player.sendMessage(ChatColor.translateAlternateColorCodes('&', GrapplingHook.cooldownMessage));
     			return;
     		}
     	}
@@ -146,10 +201,40 @@ public class GrapplingListener implements Listener{
 	    	else{
 	    		pullEntityToLocation(e, loc);
 	    		if(e instanceof Item){
-	    			ItemStack is = ((Item)e).getItemStack();
-	    			String itemName = is.getType().toString().replace("_", " ").toLowerCase();
-	    			player.sendMessage(ChatColor.GOLD+"You have hooked a stack of "+is.getAmount()+" "+itemName+"!");
-	    		}
+	    			if(GrapplingHook.sendMessages){
+						ItemStack is = ((Item)e).getItemStack();
+						String itemName = is.getType().toString().replace("_", " ").toLowerCase();
+						player.sendMessage(ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedItemMessage
+								.replaceAll("%amount%", Integer.toString(is.getAmount())).replaceAll("%item%", itemName)));
+					}
+	    		}else if(e instanceof Player){
+					Player hooked = (Player)e;
+					if(hooked.hasPermission("grapplinghook.player.nopull")){
+						event.setCancelled(true);
+					}
+					else if(GrapplingHook.sendMessages){
+						hooked.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedByMessage
+										.replaceAll("%player%", player.getName()).replaceAll("%player_display_name%", player.getDisplayName()))
+						);
+						player.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedPlayerMessage
+										.replaceAll("%player%", hooked.getName()).replaceAll("%player_display_name%", hooked.getDisplayName())));
+					}
+				}
+				else{
+					if(GrapplingHook.sendMessages){
+						String entityName = e.getName().toString().replace("_", " ").toLowerCase();
+						String entityCustomName = e.getCustomName();
+						if(entityCustomName == null){
+							entityCustomName = entityName;
+						}
+						player.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedEntityMessage
+										.replaceAll("%entity%", entityName).replaceAll("%entity_name%", entityCustomName)));
+						//player.sendMessage(ChatColor.GOLD+"You have hooked a "+entityName+"!");
+					}
+				}
 	    	}
     	}
 
@@ -165,14 +250,15 @@ public class GrapplingListener implements Listener{
     {
         Player player = event.getPlayer();
 
-        if(HookAPI.isGrapplingHook(player.getItemInHand()) == false)
+
+        if(!HookAPI.isGrapplingHook(player.getInventory().getItemInMainHand()))
         	return;
 
 		if(event.getState() == org.bukkit.event.player.PlayerFishEvent.State.IN_GROUND  || event.getState() == org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT){
 
         	Location loc = event.getHook().getLocation();
 
-			if(GrapplingHook.usePerms == false || player.hasPermission("grapplinghook.pull.items")){
+			if(!GrapplingHook.usePerms || player.hasPermission("grapplinghook.pull.items")){
 	        	for(Entity ent : event.getHook().getNearbyEntities(1.5, 1, 1.5)){
 	        		if(ent instanceof Item){
 	        			PlayerGrappleEvent e = new PlayerGrappleEvent(player, ent, player.getLocation());
@@ -182,7 +268,7 @@ public class GrapplingListener implements Listener{
 	        	}
 			}
         	
-			if(GrapplingHook.usePerms == false || player.hasPermission("grapplinghook.pull.self")){
+			if(!GrapplingHook.usePerms || player.hasPermission("grapplinghook.pull.self")){
 				PlayerGrappleEvent e = new PlayerGrappleEvent(player, player, loc);
 				plugin.getServer().getPluginManager().callEvent(e);
 			}
@@ -193,14 +279,15 @@ public class GrapplingListener implements Listener{
         		Player hooked = (Player)event.getCaught();
         		if(hooked.hasPermission("grapplinghook.player.nopull")){
 	    			event.setCancelled(true);
-	    			player.sendMessage(ChatColor.GRAY+hooked.getName()+" can not be pulled with grappling hooks.");
+	    			player.sendMessage(ChatColor.translateAlternateColorCodes('&', GrapplingHook.noHookMessage
+							.replaceAll("%player%", hooked.getName()).replaceAll("%hooked_display_name%", hooked.getDisplayName())));
 	    		}
-        		else if(GrapplingHook.usePerms == false || player.hasPermission("grapplinghook.pull.players")){
+        		else if(!GrapplingHook.usePerms || player.hasPermission("grapplinghook.pull.players")){
             		PlayerGrappleEvent e = new PlayerGrappleEvent(player, hooked, player.getLocation());
                 	plugin.getServer().getPluginManager().callEvent(e);
     			}
         	}
-        	else if(GrapplingHook.usePerms == false || player.hasPermission("grapplinghook.pull.mobs")){
+        	else if(!GrapplingHook.usePerms || player.hasPermission("grapplinghook.pull.mobs")){
         		PlayerGrappleEvent e = new PlayerGrappleEvent(player, event.getCaught(), player.getLocation());
             	plugin.getServer().getPluginManager().callEvent(e);
 			}

@@ -22,7 +22,7 @@ public final class HookAPI {
 		ItemStack is = new ItemStack(Material.FISHING_ROD);
 		ItemMeta im = is.getItemMeta();
 		im.setDisplayName(ChatColor.GOLD+"Grappling Hook");
-		ArrayList<String> lore = new ArrayList<String>();
+		ArrayList<String> lore = new ArrayList<>();
 		lore.add(ChatColor.GRAY+"Uses left: "+ChatColor.GREEN+uses);
 		im.setLore(lore);
 		is.setItemMeta(im);
@@ -81,8 +81,8 @@ public final class HookAPI {
 		String usesLine = im.getLore().get(0);
 		String uses = usesLine.substring(usesLine.indexOf("a")+1, usesLine.length());
 
-		if(isInteger(uses) == false){
-			player.setItemInHand(new ItemStack(Material.AIR));
+		if(!isInteger(uses)){
+			player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 10f, 1f);
 			return false;
 		}
@@ -91,7 +91,7 @@ public final class HookAPI {
 			currentUses--;
 			
 			if(currentUses == 0){ //hook has reached maximum uses
-				player.setItemInHand(new ItemStack(Material.AIR));
+				player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 				player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 10f, 1f);
 				return false;
 			}

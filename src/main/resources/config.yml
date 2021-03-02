@@ -1,7 +1,11 @@
 # Thanks for downloading Grappling Hook! #
-# Please tell me what you think! #
+# Orignal version by: SnowGears (Tanner Embry) #
 
 usePermissions: false
+
+# If set to true will send chat message to player that they hooked another player and to the hooked player that they've been hooked #
+
+sendMessages: true
 
 # This is how many times grappling hooks can be used before they break #
 Uses:
@@ -10,11 +14,13 @@ Uses:
   iron: 20
   gold: 25
   diamond: 100
+  netherite: 300
 
 # Setting this to true will use teleporting instead of velocity #
 teleportToHook: false
 
-# If this is true, players will not be able to craft grappling hooks #
+# If this is true, players will not be able to craft grappling hooks.#
+# Does not support reloading with /gh reload #
 disableCrafting: false
 
 # If this is true, players will take fall damage with grappling hooks #
@@ -22,3 +28,43 @@ fallDamageWithHook: false
 
 # This is how much time (in seconds) players must wait between grapples #
 timeBetweenGrapples: 0
+
+# This number sets how many times will the default hook velocity will be multiplied #
+hookSpeedMultiplier: 1.2
+
+# Allowed worlds #
+# Just enter the names of the worlds you want the grappling hook to work in #
+
+allowedWorlds:
+  - "world"
+  - "world_nether"
+  - "world_the_end"
+
+######################### Messages ##########################
+# Only the use of & color codes is allowed.                 #
+# You can find all color codes you can use here:            #
+# https://www.spigotmc.org/attachments/example2-png.188806/ #
+#############################################################
+
+# Placeholders are:
+# %player% for player"name
+# %player_display_name% for display name of player (with prefixes and suffixes)
+# %entity% for type of entity
+# %entity_name% for name of entity (Renamed entities will display their renamed names)
+# %amount% and %item% for amount of hooked items and %item% for name of hooked item
+# %uses% for number of uses of a grappling hook
+
+Messages:
+  hookedByMessage: "&eYou have been hooked by %player%!"
+  hookedPlayerMessage: "&eYou have hooked %player%!"
+  hookedEntityMessage: "&eYou have hooked a %entity%!"
+  hookedItemMessage: "&eYou have hooked %amount% of %item%!"
+  cooldownMessage: "&cYou cannot do that yet."
+  noHookMessage: "&eYou cannot pull %player%."
+  disabledWorld: "&cYou cannot use grappling hook in this world."
+  notEnoughPermission: "&cYou are not authorized to do that!"
+  playerGiveGrappling: "&7%player% has given you a grappling hook with %uses% uses!"
+  serverGiveGrappling: "&7You have been given a grappling hook with %uses% uses by the server!"
+  incorrectArguments: "&cIncorrect arguments!"
+  playerNotFound: "&cThat player could not be found."
+  configReloaded: "&aSuccessfully reloaded the config."
