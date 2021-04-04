@@ -22,3 +22,52 @@ fallDamageWithHook: false
 
 # This is how much time (in seconds) players must wait between grapples #
 timeBetweenGrapples: 0
+<<<<<<< Updated upstream
+=======
+
+# This number sets how many times will the default hook velocity will be multiplied #
+hookSpeedMultiplier: 1.2
+
+# Setting this will allow grappling hooks cancel elytra fly of hooked player
+disableElytra: true
+
+# Number from 0 - 100 in %. Sets the chance for the hooked players elytra to get unequiped on hooking them
+unequipElytraPercentage: 20
+
+# Allowed worlds #
+# Just enter the names of the worlds you want the grappling hook to work in #
+
+allowedWorlds:
+  - "world"
+  - "world_nether"
+  - "world_the_end"
+
+######################### Messages ##########################
+# Only the use of & color codes is allowed.                 #
+# You can find all color codes you can use here:            #
+# https://www.spigotmc.org/attachments/example2-png.188806/ #
+#############################################################
+
+# Placeholders are:
+# %player% for player name
+# %player_display_name% for display name of player (with prefixes and suffixes)
+# %entity% for type of entity
+# %entity_name% for name of entity (Renamed entities will display their renamed names)
+# %amount% and %item% for amount of hooked items and %item% for name of hooked item
+# %uses% for number of uses of a grappling hook
+
+Messages:
+  hookedByMessage: "&eYou have been hooked by %player%!"
+  hookedPlayerMessage: "&eYou have hooked %player%!"
+  hookedEntityMessage: "&eYou have hooked a %entity%!"
+  hookedItemMessage: "&eYou have hooked %amount% of %item%!"
+  cooldownMessage: "&cYou cannot do that yet."
+  noHookMessage: "&eYou cannot pull %player%."
+  disabledWorld: "&cYou cannot use grappling hook in this world."
+  notEnoughPermission: "&cYou are not authorized to do that!"
+  playerGiveGrappling: "&7%player% has given you a grappling hook with %uses% uses!"
+  serverGiveGrappling: "&7You have been given a grappling hook with %uses% uses by the server!"
+  incorrectArguments: "&cIncorrect arguments!"
+  playerNotFound: "&cThat player could not be found."
+  configReloaded: "&aSuccessfully reloaded the config."
+>>>>>>> Stashed changes

@@ -40,6 +40,18 @@ permissions:
     grapplinghook.player.nocooldown:
         description: Player ignores grapple cooldown
         default: op
+<<<<<<< Updated upstream
+=======
+    grapplinghook.worlds.bypass:
+        description: Allows player to bypass the allowed worlds restriction
+        default: op
+    grapplinghook.command.reload:
+        description: Reloads the config
+        default: op
+    grapplinghook.player.noelytracancel:
+        description: Players elytra fly cannot be canceled with grappling hook
+        default: op
+>>>>>>> Stashed changes
 commands:
    gh:
       description: GH GIVE gives a grappling hook.

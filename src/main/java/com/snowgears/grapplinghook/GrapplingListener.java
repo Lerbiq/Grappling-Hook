@@ -18,14 +18,21 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.Random;
 
 
 public class GrapplingListener implements Listener{
 
 	public GrapplingHook plugin = GrapplingHook.plugin;
 
+<<<<<<< Updated upstream
 	public HashMap<Integer, Integer> noFallEntities = new HashMap<Integer, Integer>(); //entity id, delayed task id
 	public HashMap<String, Integer> noGrapplePlayers = new HashMap<String, Integer>(); //name, delayed task id
+=======
+	public HashMap<Integer, Integer> noFallEntities = new HashMap<>(); //entity id, delayed task id
+	public HashMap<String, Integer> noGrapplePlayers = new HashMap<>(); //name, delayed task id
+	public Random rng = new Random();
+>>>>>>> Stashed changes
 	
 	public GrapplingListener(GrapplingHook instance) {
 		plugin = instance;
@@ -146,10 +153,59 @@ public class GrapplingListener implements Listener{
 	    	else{
 	    		pullEntityToLocation(e, loc);
 	    		if(e instanceof Item){
+<<<<<<< Updated upstream
 	    			ItemStack is = ((Item)e).getItemStack();
 	    			String itemName = is.getType().toString().replace("_", " ").toLowerCase();
 	    			player.sendMessage(ChatColor.GOLD+"You have hooked a stack of "+is.getAmount()+" "+itemName+"!");
 	    		}
+=======
+	    			if(GrapplingHook.sendMessages){
+						ItemStack is = ((Item)e).getItemStack();
+						String itemName = is.getType().toString().replace("_", " ").toLowerCase();
+						player.sendMessage(ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedItemMessage
+								.replaceAll("%amount%", Integer.toString(is.getAmount())).replaceAll("%item%", itemName)));
+					}
+	    		}else if(e instanceof Player){
+					Player hooked = (Player)e;
+					if(hooked.hasPermission("grapplinghook.player.nopull")){
+						event.setCancelled(true);
+					}
+					else if(GrapplingHook.sendMessages){
+						hooked.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedByMessage
+										.replaceAll("%player%", player.getName()).replaceAll("%player_display_name%", player.getDisplayName()))
+						);
+						player.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedPlayerMessage
+										.replaceAll("%player%", hooked.getName()).replaceAll("%player_display_name%", hooked.getDisplayName())));
+					}
+					if(GrapplingHook.disableElytra){
+						if(hooked.getInventory().getChestplate().getType().equals(Material.ELYTRA)){
+							hooked.setGliding(false);
+
+							int chance = rng.nextInt(100) +1;
+							if(chance <= GrapplingHook.unequipElytraChance) {
+								ItemStack elytra = hooked.getInventory().getChestplate();
+								hooked.getInventory().getChestplate().setAmount(0);
+								hooked.getWorld().dropItemNaturally(hooked.getLocation(), elytra);
+							}
+						}
+					}
+				}
+				else{
+					if(GrapplingHook.sendMessages){
+						String entityName = e.getName().toString().replace("_", " ").toLowerCase();
+						String entityCustomName = e.getCustomName();
+						if(entityCustomName == null){
+							entityCustomName = entityName;
+						}
+						player.sendMessage(
+								ChatColor.translateAlternateColorCodes('&', GrapplingHook.hookedEntityMessage
+										.replaceAll("%entity%", entityName).replaceAll("%entity_name%", entityCustomName)));
+						//player.sendMessage(ChatColor.GOLD+"You have hooked a "+entityName+"!");
+					}
+				}
+>>>>>>> Stashed changes
 	    	}
     	}
 

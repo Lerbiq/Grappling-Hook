@@ -26,12 +26,36 @@ public class GrapplingHook extends JavaPlugin{
 	public static boolean teleportHooked = false;
 	public static boolean fallDamage = false;
 	public static boolean disableCrafting = false;
+	public static boolean disableElytra = true;
+
 	public static int woodUses = 0;
 	public static int stoneUses = 0;
 	public static int ironUses = 0;
 	public static int goldUses = 0;
 	public static int diamondUses = 0;
 	public static int timeBetweenUses = 0;
+<<<<<<< Updated upstream
+=======
+	public static int unequipElytraChance = 20;
+
+	public static double hookSpeedMultiplier = 0;
+
+	public static String hookedByMessage = "&You have been hooked by %player%!";
+	public static String hookedPlayerMessage = "&eYou have hooked %player%!";
+	public static String hookedEntityMessage = "&eYou have hooked a %entity%!";
+	public static String hookedItemMessage = "&eYou have hooked %amount% of %item%!";
+	public static String cooldownMessage = "&cYou cannot do that yet.";
+	public static String noHookMessage = "&eYou cannot pull %player%.";
+	public static String notEnoughPermission = "&cYou are not authorized to do that!";
+	public static String playerGiveGrappling = "&7%player% has given you a grappling hook with %uses% uses!";
+	public static String serverGiveGrappling = "&7You have been given a grappling hook with %uses% uses by the server!";
+	public static String incorrectArguments = "&Incorrect arguments!";
+	public static String playerNotFound = "&cThat player could not be found.";
+	public static String disabledWorld = "&cYou cannot use grappling hook in this world.";
+	public static String configReloaded = "&cSuccessfully reloaded the config.";
+
+	public static List<String> allowedWorlds = new ArrayList<>();
+>>>>>>> Stashed changes
 
 	public void onEnable(){
 		plugin = this;
@@ -100,6 +124,42 @@ public class GrapplingHook extends JavaPlugin{
 		}
 	}
 
+<<<<<<< Updated upstream
+=======
+	public void loadConfigOptions(){
+		usePerms = getConfig().getBoolean("usePermissions");
+		sendMessages = getConfig().getBoolean("sendMessages");
+		teleportHooked = getConfig().getBoolean("teleportToHook");
+		fallDamage = getConfig().getBoolean("fallDamageWithHook");
+		disableCrafting = getConfig().getBoolean("disableCrafting");
+		disableElytra = getConfig().getBoolean("disableElytra");
+
+		woodUses = getConfig().getConfigurationSection("Uses").getInt("wood");
+		stoneUses = getConfig().getConfigurationSection("Uses").getInt("stone");
+		ironUses = getConfig().getConfigurationSection("Uses").getInt("iron");
+		goldUses = getConfig().getConfigurationSection("Uses").getInt("gold");
+		diamondUses = getConfig().getConfigurationSection("Uses").getInt("diamond");
+		netheriteUses = getConfig().getConfigurationSection("Uses").getInt("netherite");
+
+		timeBetweenUses = getConfig().getInt("timeBetweenGrapples");
+		unequipElytraChance = getConfig().getInt("unequipElytraChance");
+
+		hookSpeedMultiplier = getConfig().getDouble("hookSpeedMultiplier");
+
+		hookedByMessage = getConfig().getConfigurationSection("Messages").getString("hookedByMessage");
+		hookedPlayerMessage = getConfig().getConfigurationSection("Messages").getString("hookedPlayerMessage");
+		hookedEntityMessage = getConfig().getConfigurationSection("Messages").getString("hookedEntityMessage");
+		hookedItemMessage = getConfig().getConfigurationSection("Messages").getString("hookedItemMessage");
+		cooldownMessage = getConfig().getConfigurationSection("Messages").getString("cooldownMessage");
+		noHookMessage = getConfig().getConfigurationSection("Messages").getString("noHookMessage");
+		notEnoughPermission = getConfig().getConfigurationSection("Messages").getString("notEnoughPermission");
+		disabledWorld = getConfig().getConfigurationSection("Messages").getString("disabledWorld");
+		configReloaded = getConfig().getConfigurationSection("Messages").getString("configReloaded");
+
+		allowedWorlds = getConfig().getStringList("allowedWorlds");
+	}
+
+>>>>>>> Stashed changes
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(args.length == 1){
